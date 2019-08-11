@@ -88,7 +88,7 @@ class Log(object):
     def addEntry(self, fieldName, value):
         self._log.append("%s%s: %s" % (self._tabulation(), fieldName, value))
     def getLogString(self):
-        return "\n".join(["Log:%s, %s -> %s", (self._date, self._startTime, self._getTime())] + self._log)
+        return "\n".join(["Log:%s, %s -> %s" % (self._date, self._startTime, self._getTime())] + self._log)
 
 def cli():
     class options(Enum):
@@ -137,9 +137,6 @@ def cli():
         answers = prompt(questions)
         return answers[CHOICE]
 
-    def isValid(option):
-        return True
-
     def newEntry():
         entry = input()
         entryParts = [part.strip() for part in entry.split(":")]
@@ -151,19 +148,18 @@ def cli():
     log = Log()
 
     while True:
-        answer = displayOptions()
-        pprint(answer)
+        choice = displayOptions()
 
-        if answer == options.EXIT:
+        if choice == options.EXIT:
             break
-        # switcher = {
-        #     EXIT: lambda: False,
-        #     "levelDown": lambda: log.levelDown(),
-        #     "levelUp": lambda: log.levelUp(),
-        #     "entry": newEntry,
-        #     "checkLog": lambda: print(log.getLogString())
-        # }
-        # switcher[option]()
+
+        actions = {
+            options.DOWN: lambda: log.levelDown(),
+            options.UP: lambda: log.levelUp(),
+            options.INPUT: newEntry,
+            options.SHOW: lambda: print(log.getLogString())
+        }
+        actions[choice]()
 
     # appendLogToFile(log.getLogString())
 
