@@ -23,21 +23,26 @@ def countTabs(line):
 def isLogStart(line):
     return countTabs(line) == 0 and line[0:len(LOG_START)] == LOG_START
 
-def parseLogs(logs: str):  # returns array of log strings
-    def findLogStartIndex(logsLines, startIndex):
-        for index in range(startIndex, len(logsLines)):
-            if isLogStart(logsLines[index]):
+def parseBySection(isSectionStart, text: str):
+    def findSectionStart(lines, startIndex):
+        for index in range(startIndex, len(lines)):
+            if isSectionStart(lines[index]):
                 return index
-        return len(logsLines)
+        return len(lines)
 
-    def parseLogsR(logsLines, logsArray):
-        logIndex = findLogStartIndex(logsLines, 0)
-        nextLogIndex = findLogStartIndex(logsLines[logIndex:], logIndex + 1)
-        if nextLogIndex == len(logsLines):
-            return logsArray + ["\n".join(logsLines[logIndex: nextLogIndex])]
-        return parseLogsR(logsLines[nextLogIndex:], logsArray + ["\n".join(logsLines[logIndex: nextLogIndex])])
+    def parseSectionsR(sectionsLines, sections):
+        sectionIndex = findSectionStart(sectionsLines, 0)
+        nextSectionIndex = findSectionStart(sectionsLines, sectionIndex + 1)
+        if nextSectionIndex == len(sectionsLines):
+            return sections + ["\n".join(sectionsLines[sectionIndex: nextSectionIndex])]
+        return parseSectionsR(
+            sectionsLines[nextSectionIndex:],
+            sections + ["\n".join(sectionsLines[sectionIndex: nextSectionIndex])]
+        )
 
-    return parseLogsR(logs.split("\n"), [])
+    return parseSectionsR(text.split("\n"), [])
+
+parseLogs = partial(parseBySection, isLogStart)
 
 def main():
     logs = getLogs()
@@ -46,25 +51,6 @@ def main():
 
 main()
 
-
-# def parseBySection(isSectionStart, text: str):
-#     def findSectionStart(isSectionStart, text, startIndex):
-#         for line in range(index, len(logsLines)):
-#             if isSectionStart(line):
-#                 return index
-#         return len(logsLines)
-#
-#     def parseSectionsR(sectionsLines, sections):
-#         sectionIndex = findSectionStart(sectionsLines, 0)
-#         nextSectionIndex = findSectionStart(sectionsLines, sectionIndex + 1)
-#         if nextSectionIndex == len(sectionsLines):
-#             return sections + ["\n".join(sectionsLines[sectionIndex: nextSectionIndex])]
-#         return parseLogsR(
-#             sectionsLines[nextSectionIndex:],
-#             sections + ["\n".join(sections[sectionIndex: nextSectionIndex])]
-#         )
-#
-#     return parseSectionsR(logs.split("\n"), [])
 
 
 # Analyse by tabs, counttab function
