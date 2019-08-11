@@ -1,4 +1,4 @@
-LOG_FILE_PATH = "./logging.txt"
+LOG_FILE_PATH = "./test.txt"
 LOG_START = "Log"
 
 from functools import partial
@@ -74,10 +74,9 @@ class Log(object):
         self._log = []
 
     def _getDate(self):
-        return ""
+        return datetime.fromtimestamp(time()).strftime("%D/%M/%Y")
     def _getTime(self):
-        ts = time()
-        return datetime.fromtimestamp(ts).strftime('%H:%M')
+        return datetime.fromtimestamp(time()).strftime('%H:%M')
     def _tabulation(self):
         return "\t" * self._level
 
@@ -88,7 +87,7 @@ class Log(object):
     def addEntry(self, fieldName, value):
         self._log.append("%s%s: %s" % (self._tabulation(), fieldName, value))
     def getLogString(self):
-        return "\n".join(["Log:%s, %s -> %s" % (self._date, self._startTime, self._getTime())] + self._log)
+        return "\n" + "\n".join(["Log:%s, %s -> %s" % (self._date, self._startTime, self._getTime())] + self._log)
 
 def cli():
     class options(Enum):
@@ -142,8 +141,9 @@ def cli():
         entryParts = [part.strip() for part in entry.split(":")]
         log.addEntry(entryParts[0], entryParts[1])
 
-    def appendLogToFile(log):
-        return
+    def appendLogToFile(log: Log):
+        with open(LOG_FILE_PATH, "a") as logFile:
+            logFile.write(log.getLogString())
 
     log = Log()
 
@@ -161,7 +161,7 @@ def cli():
         }
         actions[choice]()
 
-    # appendLogToFile(log.getLogString())
+    appendLogToFile(log)
 
 def main():
     logs = getLogs()
