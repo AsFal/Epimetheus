@@ -1,14 +1,18 @@
-LOG_FILE_PATH = "./test.txt"
+LOG_FILE_PATH = "./logging.txt"
 LOG_START = "Log"
 
-from functools import partial
+# from typings import List
+
+from functools import partial, reduce
 from time import time
 from datetime import datetime
 from pprint import pprint
 
+
 from PyInquirer import style_from_dict, Token, prompt
 
 from enum import Enum, auto
+from treelib import Node, Tree
 
 # Get file
 def getLogs():
@@ -17,6 +21,9 @@ def getLogs():
 
 def isEmpty(string):
     return string == ""
+
+def flatten(l):
+    return [item for sublist in l for item in sublist]
 
 def isWhitespace(string):
     if isEmpty(string):
@@ -34,25 +41,33 @@ def countTabs(line):
         return count
     return countTabsR(line, 0)
 
-def parseBySection(isSectionStart, text: str):
-    def findSectionStart(lines, startIndex):
+def findSectionStart(isSectionStart, lines, startIndex):
         for index in range(startIndex, len(lines)):
             if isSectionStart(lines[index]):
                 return index
         return len(lines)
 
+def parseBySection(isSectionStart, text: str):
     def parseSectionsR(sectionsLines, sections):
-        sectionIndex = findSectionStart(sectionsLines, 0)
-        nextSectionIndex = findSectionStart(sectionsLines, sectionIndex + 1)
+        sectionIndex = findSectionStart(isSectionStart, sectionsLines, 0)
+        nextSectionIndex = findSectionStart(isSectionStart, sectionsLines, sectionIndex + 1)
         if nextSectionIndex == len(sectionsLines):
             return sections + ["\n".join(sectionsLines[sectionIndex: nextSectionIndex])]
         return parseSectionsR(
             sectionsLines[nextSectionIndex:],
             sections + ["\n".join(sectionsLines[sectionIndex: nextSectionIndex])]
         )
-
     return parseSectionsR(text.split("\n"), [])
 
+def extractSectionTitle(isSectionStart, text: str):
+    sectionLines = text.split("\n")
+    sectionIndex = findSectionStart(isSectionStart, sectionLines, 0)
+    return sectionLines[sectionIndex].split(":")[0].strip()
+
+def extractSectionValue(isSectionStart, text: str):
+    sectionLines = text.split("\n")
+    sectionIndex = findSectionStart(isSectionStart, sectionLines, 0)
+    return sectionLines[sectionIndex].split(":")[1].strip()
 
 def isLogStart(line):
     return countTabs(line) == 0 and line[0:len(LOG_START)] == LOG_START
@@ -62,16 +77,16 @@ parseLogs = partial(parseBySection, isLogStart)
 def isLevel(levelNum, line):
     return countTabs(line) == levelNum and not isWhitespace(line)
 
-parseCategories = partial(parseBySection, partial(isLevel, 1))
 parseField = partial(parseBySection, partial(isLevel, 2))
 
+isCategory = partial(isLevel, 1)
 
 class Log(object):
-    def __init__(self):
+    def __init__(self, oldLog=""):
         self._date = self._getDate()
         self._startTime = self._getTime()
         self._level = 1
-        self._log = []
+        self._log = [] if oldLog == "" else oldLog.split("\n")
 
     def _getDate(self):
         return datetime.fromtimestamp(time()).strftime("%D/%M/%Y")
@@ -80,6 +95,7 @@ class Log(object):
     def _tabulation(self):
         return "\t" * self._level
 
+    # Log interactive creation methods
     def levelDown(self):
         self._level -= 1
     def levelUp(self):
@@ -89,13 +105,34 @@ class Log(object):
     def getLogString(self):
         return "\n" + "\n".join(["Log:%s, %s -> %s" % (self._date, self._startTime, self._getTime())] + self._log)
 
-def cli():
+    # Log analysis methods
+    def getAllCategories(self):
+        parseCategories = partial(parseBySection, isCategory)
+        return parseCategories(self.getLogString())
+    def getAllCategoryTitles(self):
+        categories = self.getAllCategories()
+        return [extractSectionTitle(isCategory, category) for category in categories]
+
+    # Log transformation
+    # def getCategoryTree():
+        # averagedOut ??
+
+class CategoryTree(Tree):
+    def __init__(self, category: str):
+        super().__init__()
+        # use some form of recursive algorithm here to get my tree
+    def merge(self, categoryTree):
+        return None
+
+
+def cli(previousLogs):
     class options(Enum):
         EXIT = auto()
         UP = auto()
         DOWN = auto()
         INPUT = auto()
         SHOW = auto()
+        PREVIOUS_CATEGORIES = auto()
 
     def displayOptions():
         CHOICE = "choice"
@@ -129,6 +166,11 @@ def cli():
                         "key": "x",
                         "name": "Save and exit",
                         "value": options.EXIT
+                    },
+                    {
+                        "key": "p",
+                        "name": "Previous chosen categories",
+                        "value": options.PREVIOUS_CATEGORIES
                     }
                 ]
             }
@@ -145,6 +187,10 @@ def cli():
         with open(LOG_FILE_PATH, "a") as logFile:
             logFile.write(log.getLogString())
 
+    def showPreviousCategories():
+        allCategoryTitles = [log.getAllCategoryTitles() for log in previousLogs]
+        pprint(sorted(list(set(flatten(allCategoryTitles)))))
+
     log = Log()
 
     while True:
@@ -157,7 +203,8 @@ def cli():
             options.DOWN: lambda: log.levelDown(),
             options.UP: lambda: log.levelUp(),
             options.INPUT: newEntry,
-            options.SHOW: lambda: print(log.getLogString())
+            options.SHOW: lambda: print(log.getLogString()),
+            options.PREVIOUS_CATEGORIES: showPreviousCategories
         }
         actions[choice]()
 
@@ -165,8 +212,9 @@ def cli():
 
 def main():
     logs = getLogs()
-    logsArray = parseLogs(logs)
-    cli()
+    logStringList = parseLogs(logs)
+    logsArray = [Log(logString) for logString in logStringList]
+    cli(logsArray)
     return logsArray
 
 main()
