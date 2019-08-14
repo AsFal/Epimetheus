@@ -9,6 +9,8 @@ typings = "*"
 [packages]
 pyinquirer = "*"
 treelib = "*"
+bs4 = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.6"
