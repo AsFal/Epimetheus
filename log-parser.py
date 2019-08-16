@@ -8,7 +8,6 @@ from time import time
 from datetime import datetime
 from pprint import pprint
 
-
 from PyInquirer import style_from_dict, Token, prompt
 
 from enum import Enum, auto
@@ -89,7 +88,7 @@ class Log(object):
         self._log = [] if oldLog == "" else oldLog.split("\n")
 
     def _getDate(self):
-        return datetime.fromtimestamp(time()).strftime("%D/%M/%Y")
+        return datetime.fromtimestamp(time()).strftime("%D")
     def _getTime(self):
         return datetime.fromtimestamp(time()).strftime('%H:%M')
     def _tabulation(self):
@@ -209,12 +208,3 @@ def cli(previousLogs):
         actions[choice]()
 
     appendLogToFile(log)
-
-def main():
-    logs = getLogs()
-    logStringList = parseLogs(logs)
-    logsArray = [Log(logString) for logString in logStringList]
-    cli(logsArray)
-    return logsArray
-
-main()
