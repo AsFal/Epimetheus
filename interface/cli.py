@@ -1,6 +1,5 @@
 from enum import Enum, auto
 
-from pprint import pprint
 from PyInquirer import style_from_dict, Token, prompt
 
 from logs import Log, TextLog, appendToLogs
@@ -9,7 +8,7 @@ from util import flatten
 from getch import getch
 from pprint import pprint
 
-
+import sys
 
 def startWith(word, prefix):
     return word.lower()[0: len(prefix)] == prefix.lower()
@@ -19,6 +18,8 @@ def autocompleteGenerator(availableWords):
         return [word for word in availableWords if startWith(word, partialWord)]
     return getSuggestions
 
+def truncate(value, maximum):
+    return value if value < maximum else maximum
 
 def suggestiveInput(availableWords):
     ENTER_ORDER = 10
@@ -35,10 +36,16 @@ def suggestiveInput(availableWords):
             word = word[0:-1]
         else:
             word += c
-        print("==================")
-        print(word)
-        pprint(suggestions(word))
-        print("------------------")
+        SPACE = "                           "
+        print("word: %s%s" % (word, SPACE))
+        options = suggestions(word)
+        for i in range(0, 5):
+            if i < len(options):
+                print(options[i] + SPACE)
+            else:
+                print(SPACE)
+
+        sys.stdout.write("\033[F" * 6) # Cursor up one line
     return word
 
 
