@@ -3,9 +3,44 @@ from enum import Enum, auto
 from pprint import pprint
 from PyInquirer import style_from_dict, Token, prompt
 
-from logs import Log, appendToLogs
+from logs import Log, TextLog, appendToLogs
 
 from util import flatten
+from getch import getch
+from pprint import pprint
+
+
+
+def startWith(word, prefix):
+    return word.lower()[0: len(prefix)] == prefix.lower()
+
+def autocompleteGenerator(availableWords):
+    def getSuggestions(partialWord):
+        return [word for word in availableWords if startWith(word, partialWord)]
+    return getSuggestions
+
+
+def suggestiveInput(availableWords):
+    ENTER_ORDER = 10
+    BACKSPACE_ORDER = 127
+    '''As input is written, the user will be able to see suggestions in the terminal'''
+    suggestions = autocompleteGenerator(availableWords)
+    # Before : suggest different different categories
+    word = ""
+    while True:
+        c = getch()
+        if ord(c) == ENTER_ORDER:
+            break
+        elif ord(c) == BACKSPACE_ORDER:
+            word = word[0:-1]
+        else:
+            word += c
+        print("==================")
+        print(word)
+        pprint(suggestions(word))
+        print("------------------")
+    return word
+
 
 def cli(previousLogs):
     class options(Enum):
@@ -72,7 +107,7 @@ def cli(previousLogs):
         allCategoryTitles = [log.getAllCategoryTitles() for log in previousLogs]
         pprint(sorted(list(set(flatten(allCategoryTitles)))))
 
-    log = Log()
+    log = TextLog()
 
     while True:
         choice = displayOptions()
