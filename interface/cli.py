@@ -19,6 +19,8 @@ def autocompleteGenerator(availableWords):
     return getSuggestions
 
 def suggestiveInput(availableWords, endCharacter):
+    # Add a color option for the suggestions
+    # Also tabulate the suggestions to where the input is
 
     CLEAR_REST = "\033[K"
     BACKSPACE_ORDER = 127
@@ -56,13 +58,20 @@ def suggestiveInput(availableWords, endCharacter):
     return word
 
 def suggestiveEntry(previousTitles, previousValues):
-    ENTER_ORDER = 10
     title = suggestiveInput(previousTitles, ":")
     sys.stdout.write(" ")
     value = suggestiveInput(previousValues, "\n")
     return (title.strip(), value.strip())
 
 def cli(previousLogs):
+
+    # Method That seeks in an array of SectionTrees -> SectionLogs, whatever, make an interface
+    # Method returns a list of all section titles and contents of level one entries available
+    # returns a tuple containing both lists
+    # Could also have two methods, one for each, doubles the run time
+    # Those arrays can then be passed to the suggestive input so that I can have suggestions of previous
+    # categories as I type
+
     class options(Enum):
         EXIT = auto()
         UP = auto()
