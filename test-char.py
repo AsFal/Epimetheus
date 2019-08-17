@@ -1,6 +1,7 @@
 from getch import getch
 
-from interface import suggestiveInput
+from interface import suggestiveEntry
+
 
 def orderChecker():
     while True:
@@ -11,7 +12,7 @@ def orderChecker():
             print("Char: %s, Order: %s" % (c, ord(c)))
 
 def suggestionsTest():
-    availableWords = [
+    availableEntries = [
         "Alex",
         "Alexandre",
         "Animation",
@@ -22,12 +23,19 @@ def suggestionsTest():
         "Adandos",
         "Afilliation"
     ]
-    finalWord = suggestiveInput(availableWords)
-    print("|===%s===|" % finalWord)
+    availableTitles = [
+        "Cat1",
+        "Cat2",
+        "Cat3"
+    ]
+    entry = suggestiveEntry(availableTitles, availableEntries)
+    print("Final log")
+    print("%s: %s" % (entry[0], entry[1]))
 
 
 def main():
     # orderChecker()
+    print("Start")
     suggestionsTest()
 
 main()
