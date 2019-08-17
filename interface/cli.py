@@ -18,36 +18,49 @@ def autocompleteGenerator(availableWords):
         return [word for word in availableWords if startWith(word, partialWord)]
     return getSuggestions
 
-def truncate(value, maximum):
-    return value if value < maximum else maximum
+def suggestiveInput(availableWords, endCharacter):
 
-def suggestiveInput(availableWords):
-    ENTER_ORDER = 10
+    CLEAR_REST = "\033[K"
     BACKSPACE_ORDER = 127
+
+    def saveCursor():
+        sys.stdout.write("\033[s") # ANSI escpae sequences
+    def returntoSave():
+        sys.stdout.write("\033[u")
+
     '''As input is written, the user will be able to see suggestions in the terminal'''
     suggestions = autocompleteGenerator(availableWords)
     # Before : suggest different different categories
     word = ""
     while True:
         c = getch()
-        if ord(c) == ENTER_ORDER:
+        if ord(c) == ord(endCharacter):
+            sys.stdout.write(word + endCharacter)
+            sys.stdout.flush()
             break
         elif ord(c) == BACKSPACE_ORDER:
             word = word[0:-1]
         else:
             word += c
-        SPACE = "                           "
-        print("word: %s%s" % (word, SPACE))
+
+        saveCursor()
+        sys.stdout.write("%s%s\n" % (word, CLEAR_REST)) # write word inline and clear rest of line
         options = suggestions(word)
         for i in range(0, 5):
             if i < len(options):
-                print(options[i] + SPACE)
+                print(options[i] + CLEAR_REST)
             else:
-                print(SPACE)
+                print(CLEAR_REST)
+        returntoSave()
 
-        sys.stdout.write("\033[F" * 6) # Cursor up one line
     return word
 
+def suggestiveEntry(previousTitles, previousValues):
+    ENTER_ORDER = 10
+    title = suggestiveInput(previousTitles, ":")
+    sys.stdout.write(" ")
+    value = suggestiveInput(previousValues, "\n")
+    return (title.strip(), value.strip())
 
 def cli(previousLogs):
     class options(Enum):
