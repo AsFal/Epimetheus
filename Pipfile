@@ -11,6 +11,7 @@ pyinquirer = "*"
 treelib = "*"
 bs4 = "*"
 matplotlib = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.6"
