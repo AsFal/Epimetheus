@@ -56,15 +56,11 @@ class Log(object):
         self._level += 1
 
     def addEntry(self, fieldName, value):
-        self._log.append("%s%s: %s" % (self._tabulation(), fieldName, value))
+        raise NotImplementedError
     def getLogString(self):
-        return "\n" + "\n".join(["Log:%s, %s -> %s" % (self._date, self._startTime, self._getTime())] + self._log)
+        raise NotImplementedError
 
-    # Log analysis methods
     def getAllCategories(self):
-        parseCategories = partial(parseBySection, isCategory)
-        return parseCategories(self.getLogString())
+        raise NotImplementedError
     def getAllCategoryTitles(self):
-        categories = self.getAllCategories()
-        return [extractSectionTitle(isCategory, category) for category in categories]
-
+        raise NotImplementedError
