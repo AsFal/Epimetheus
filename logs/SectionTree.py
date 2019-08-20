@@ -64,7 +64,7 @@ class SectionTree(Tree):
 
         return getLogStringR(self, 0)
 
-    def _getAllChildSectionTrees(self, condition=None):
+    def getAllChildSectionTrees(self, condition=None):
         '''
         Condition is on the section subtree
         This Method does not currently have a concept of depth,
@@ -75,11 +75,11 @@ class SectionTree(Tree):
             for node in self._rootNode.fpointer
             if condition is None or condition(self.subtree(node.tag))]
 
-    def _getAllChildrenTitles(self, root, condition=None):
-        return [childTree._rootNode.data.title for childTree in self._getAllChildSectionTrees()]
+    def getAllChildrenTitles(self, root, condition=None):
+        return [childTree._rootNode.data.title for childTree in self.getAllChildSectionTrees()]
 
-    def _getAllChildrenContent(self, root, condition=None):
-        return [childTree._rootNode.data.content for childTree in self._getAllChildSectionTrees()]
+    def getAllChildrenContent(self, root, condition=None):
+        return [childTree._rootNode.data.content for childTree in self.getAllChildSectionTrees()]
 
     def _traverse(self, action, builder=None):
         '''
