@@ -19,7 +19,7 @@ class TreeLog(Log):
     def __init__(self):
         super().__init__()
         self._log = SectionTree()
-        self._log.addEntry(self._buildLogHeader())
+        self._log.addEntry(self.header)
 
     def getLogHeader(self):
         return self._log[self._log.root].data

@@ -33,7 +33,7 @@ class TestTextLog(TestCase):
         self.l2_child2 = Entry(self.LEVEL_TWO, self.L2_C2)
         self.l2_child3 = Entry(self.LEVEL_TWO, self.L2_C3)
         mockTextLog = TextLog()
-        self.root = mockTextLog._buildLogHeader()
+        self.root = mockTextLog.header
         dummyText = '%s\n\t%s\n\t\t%s\n\t\t%s\n\t%s\n\t\t%s\n\t%s\n' % (
             self.root.toString(),
             self.child1.toString(),

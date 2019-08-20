@@ -2,30 +2,9 @@ from treelib import Tree, Node
 from treelib.exceptions import DuplicatedNodeIdError
 from functools import reduce
 
+from .Entry import Entry
+
 from util import find
-
-class Entry(object):
-    @staticmethod
-    def fromString(stringEntry):
-        '''
-        Supports parsing entry of the following format:\n
-        Entry Title: Entry Content
-        '''
-        entryParts = stringEntry.split(":")
-        return Entry(entryParts[0].strip(), ":".join(entryParts[1:]).strip())
-
-    def __init__(self, title, content):
-        self.title = title
-        self.content = content
-
-    @property
-    def id(self):
-        return self.title + self.content
-
-    def toString(self):
-        return "%s: %s" % (self.title, self.content)
-
-# TopLevel Class must have an iterator
 
 class SectionTree(Tree):
     def __init__(self, copy=None, tree=None):

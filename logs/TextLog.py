@@ -5,6 +5,8 @@ from time import time
 from .TreeLog import TreeLog
 from .SectionTree import Entry
 
+from .Entry import Entry, LogHeader
+
 from functools import partial
 
 from .textParser import parseBySection, isCategory, extractSectionTitle, isCategory, isLevel, isLogStart, findSectionStart
@@ -35,10 +37,11 @@ class TextLog(Log):
                 toTreeLogR(sectionLines[sectionIndex + 1: nextIndex], level + 1, newEntry, tree)
 
         treeLog = TreeLog()
-        treeLog.setDate(self._date)
-        treeLog.setStartTime(self._startTime)
-        treeLog.setEndTime(self._endTime)
-        toTreeLogR(self._log, 1, treeLog.getLogHeader(), treeLog)
+        treeLog._date = self._date
+        treeLog._startTime = self._startTime
+        treeLog._endTime = self._endTime
+
+        toTreeLogR(self._log, 1, treeLog.header, treeLog)
         return treeLog
 
     # This could eventually be extracted in another data structure similar to the SectionTree one
@@ -64,8 +67,12 @@ class TextLog(Log):
             oldLogLines = oldLog.split("\n")
             logHeaderIndex = findSectionStart(isLogStart, oldLogLines)
             self._log = oldLogLines[logHeaderIndex + 1:]
-            oldHeader = self._parseLogHeaderString(oldLogLines[logHeaderIndex])
-            super().__init__(oldHeader)
+            oldHeader= LogHeader.fromString(oldLogLines[logHeaderIndex])
+            super().__init__(
+                oldHeader.date,
+                oldHeader.startTime,
+                oldHeader.endTime
+            )
 
     def _getDate(self):
         return datetime.fromtimestamp(time()).strftime("%D")
@@ -82,7 +89,7 @@ class TextLog(Log):
     def addEntry(self, fieldName, value):
         self._log.append("%s%s: %s" % (self._tabulation(), fieldName, value))
     def getLogString(self):
-        return "\n".join([self._buildLogHeader().toString()] + self._log)
+        return "\n".join([self.header.toString()] + self._log)
 
     # Log analysis methods
     def getAllCategories(self):
