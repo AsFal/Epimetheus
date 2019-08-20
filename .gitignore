@@ -1,3 +1,5 @@
 .vscode/
 op.md
 entities/
+__pycache__/
+.cache/
