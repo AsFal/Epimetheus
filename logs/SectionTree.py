@@ -5,6 +5,15 @@ from functools import reduce
 from util import find
 
 class Entry(object):
+    @staticmethod
+    def fromString(stringEntry):
+        '''
+        Supports parsing entry of the following format:\n
+        Entry Title: Entry Content
+        '''
+        entryParts = stringEntry.split(":")
+        return Entry(entryParts[0].strip(), ":".join(entryParts[1:]).strip())
+
     def __init__(self, title, content):
         self.title = title
         self.content = content
