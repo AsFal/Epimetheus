@@ -20,15 +20,27 @@ class TreeLog(Log):
         super().__init__()
         self._log = SectionTree()
         self._log.addEntry(self.header)
+        self._iteratorParent = self.header
+        self._lastEntry = None
 
     def getLogHeader(self):
         return self._log[self._log.root].data
+
+    def levelUp(self):
+        self._iteratorParent = self._lastEntry
+        self._lastEntry = None
+
+    def levelDown(self):
+        self._iteratorParent = self._log[self._log[self._iteratorParent.id].bpointer].data
+        self._lastEntry = self._iteratorParent
 
     def addEntry(self, new, parent=None):
         '''
         Provide parent entry in the form of a tuple
         (title, content)
         '''
+        parent = self._iteratorParent if parent is None else parent
+        self._lastEntry = new
         self._log.addEntry(new, parent)
         # build iterator that can follow where to go based on level up level down
 
