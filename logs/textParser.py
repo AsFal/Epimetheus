@@ -15,7 +15,7 @@ def appendToLogs(newLogString):
     with open(LOG_FILE_PATH, "a") as logFile:
         logFile.write(newLogString)
 
-def findSectionStart(isSectionStart, lines, startIndex):
+def findSectionStart(isSectionStart, lines, startIndex=0):
         for index in range(startIndex, len(lines)):
             if isSectionStart(lines[index]):
                 return index

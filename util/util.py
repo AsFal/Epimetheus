@@ -4,6 +4,12 @@ def isEmpty(string):
 def flatten(l):
     return [item for sublist in l for item in sublist]
 
+def find(condition, l):
+    for x in l:
+        if condition(x):
+            return x
+    return None
+
 def isWhitespace(string):
     if isEmpty(string):
         return True
@@ -19,4 +25,3 @@ def countTabs(line):
             return countTabsR(line[1:], count + 1)
         return count
     return countTabsR(line, 0)
-
