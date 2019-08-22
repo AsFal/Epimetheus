@@ -3,6 +3,8 @@ from unittest import TestCase
 
 from util import find
 
+from pprint import pprint
+
 class TestSectionTree(TestCase):
     ROOT = "root"
     ROOT_MESSAGE ="rootMessage"
@@ -77,11 +79,12 @@ class TestSectionTree(TestCase):
 
         def checkChildren(tree, nid, entries):
             assert len(tree[nid].fpointer) == len(entries)
-            assert len([
-                childNid for childNid in tree[nid].fpointer if tree[childNid].data.id not in [
-                    entry.id for entry in entries
-                ]
-            ]) == 0
+
+            childEntries = [tree[childNid].data for childNid in tree[nid].fpointer]
+            for entry in entries:
+                childEntries = [child for child in childEntries if not entry.isEquivalent(child)]
+
+            assert len(childEntries) == 0
 
         def findChildNode(tree, parentNid, entry):
             return find(lambda nid: tree[nid].data.id == entry.id, tree[parentNid].fpointer)

@@ -24,6 +24,12 @@ class Entry(object):
     def toString(self):
         return "%s: %s" % (self.title, self.content)
 
+    def isEquivalent(self, entry):
+        '''
+        Returns true when title and content of both entries are the same.
+        '''
+        return self.title == entry.title and self.content == entry.content
+
 class LogHeader(Entry):
 
     @staticmethod
