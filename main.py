@@ -1,11 +1,10 @@
-from logs import getLogs, parseLogs, Log, TextLog
+from logs import getLogs, parseLogs, Log, TextLog, LogList
 from interface import cli
 
 def main():
     logs = getLogs()
     logStringList = parseLogs(logs)
-    logsArray = [TextLog(logString).toTreeLog() for logString in logStringList]
-    cli(logsArray)
-    return logsArray
+    logList = LogList(logs=[TextLog(logString).toTreeLog() for logString in logStringList])
+    cli(logList)
 
 main()

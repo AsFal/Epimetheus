@@ -2,7 +2,7 @@ from enum import Enum, auto
 
 from PyInquirer import style_from_dict, Token, prompt
 
-from logs import Log, TextLog, appendToLogs
+from logs import Log, TextLog, appendToLogs, LogList
 
 from util import flatten
 from getch import getch
@@ -63,7 +63,7 @@ def suggestiveEntry(previousTitles, previousValues):
     value = suggestiveInput(previousValues, "\n")
     return (title.strip(), value.strip())
 
-def cli(previousLogs):
+def cli(previousLogs: LogList):
 
     # Method That seeks in an array of SectionTrees -> SectionLogs, whatever, make an interface
     # Method returns a list of all section titles and contents of level one entries available
@@ -125,6 +125,12 @@ def cli(previousLogs):
         return answers[CHOICE]
 
     def newEntry():
+        # The behavior is safly only implemented by behavior
+        # Desired behavior:
+        # - Prints all category titles for current level
+        # - Prints all category sections for current level
+        # for that it would be very helful to keep track of some kind of partial log structure
+
         entry = input()
         entryParts = [part.strip() for part in entry.split(":")]
         log.addEntry(entryParts[0], entryParts[1])
@@ -133,8 +139,7 @@ def cli(previousLogs):
         appendToLogs(log.getLogString())
 
     def showPreviousCategories():
-        allCategoryTitles = [log.getAllCategoryTitles() for log in previousLogs]
-        pprint(sorted(list(set(flatten(allCategoryTitles)))))
+        pprint(previousLogs.getAllCategories())
 
     log = TextLog()
 
