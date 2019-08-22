@@ -47,9 +47,9 @@ class SectionTree(Tree):
         children refers to the root's children.
         '''
         return [
-            self.subtree(node.tag)
-            for node in self._rootNode.fpointer
-            if condition is None or condition(self.subtree(node.identifier))]
+            self.subtree(nid)
+            for nid in self._rootNode.fpointer
+            if condition is None or condition(self.subtree(nid))]
 
     def getAllChildrenTitles(self, root, condition=None):
         return [childTree._rootNode.data.title for childTree in self.getAllChildSectionTrees()]

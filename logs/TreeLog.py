@@ -12,7 +12,7 @@ class TreeLog(Log):
     @staticmethod
     def getReport(self, logs, category): # -> all logs must be TreeLog
         categoryTrees = [log._getAllCategoryTrees() for log in logs]
-        categoryTreesF = [categoryTree for categoryTree in categoryTrees if categoryTree._rootNode.data.id == category.id]
+        categoryTreesF = [categoryTree for categoryTree in categoryTrees if categoryTree._rootNode.data.isEquivalent(category)]
         reportTree = reduce(lambda merged, categoryTree: merged.merge(categoryTree), categoryTreesF)
         return reportTree.toString()
 
