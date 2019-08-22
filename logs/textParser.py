@@ -1,4 +1,4 @@
-LOG_FILE_PATH = "./entities/logging.txt"
+LOG_FILE_PATH = "./entities/test.txt"
 LOG_START = "Log"
 
 from functools import partial, reduce

@@ -4,7 +4,7 @@ from interface import cli
 def main():
     logs = getLogs()
     logStringList = parseLogs(logs)
-    logsArray = [TextLog(logString) for logString in logStringList]
+    logsArray = [TextLog(logString).toTreeLog() for logString in logStringList]
     cli(logsArray)
     return logsArray
 
