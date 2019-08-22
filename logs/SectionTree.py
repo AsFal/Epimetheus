@@ -32,9 +32,6 @@ class SectionTree(Tree):
         else:
             self.create_node(new.title, new.id, parent=parent.id, data=new)
 
-    def getLogString(self):
-        return self.toString()
-
     def toString(self):
         def getLogStringR(tree: SectionTree, level):
             parts = [getLogStringR(tree.subtree(child), level + 1) for child in tree._rootNode.fpointer]
@@ -52,7 +49,7 @@ class SectionTree(Tree):
         return [
             self.subtree(node.tag)
             for node in self._rootNode.fpointer
-            if condition is None or condition(self.subtree(node.tag))]
+            if condition is None or condition(self.subtree(node.identifier))]
 
     def getAllChildrenTitles(self, root, condition=None):
         return [childTree._rootNode.data.title for childTree in self.getAllChildSectionTrees()]
@@ -70,8 +67,8 @@ class SectionTree(Tree):
                 action(tree)
             else:
                 action(tree, builder)
-            for child in tree._rootNode.fpointer:
-                traverseLogR(tree.subtree(child.tag), builder, builder)
+            for nid in tree._rootNode.fpointer:
+                traverseLogR(tree.subtree(nid), action, builder)
 
         traverseLogR(self, action, builder)
 
@@ -81,26 +78,25 @@ class SectionTree(Tree):
                 tree._rootNode.data.title = new
         self._traverse(editTitle)
 
+    def _childNodes(self, node):
+        return [self[nid] for nid in node.fpointer]
+
     # this section should be using the TreeLog data structure instead just the tree data structure
     def merge(self, otherTree):
+        def areIdentical(l, r):
+            return l.toString() == r.toString()
 
-        # def clean(tree: SectionTree):
-        #     cleanTree = SectionTree()
-        #     cleanTree.add_node(tree._rootNode)
-        #     for childNid in tree._rootNode.fpointer:
-        #         if any(nid == childNid for nid in cleanTree._rootNode.fpointer):
-        #             newTree = mergeR(cleanTree.subtree(childNid), tree.subtree(childNid))
-        #             cleanTree.remove_node(childNid)
-        #             cleanTree.add_node(newTree._rootNode)
-        #     return cleanTree
-
-        def safePaste(targetTree: SectionTree, parent, newTree: SectionTree):
-            for nid in newTree._rootNode.fpointer:
-                if nid not in targetTree._rootNode.fpointer:
-                    targetTree.paste(targetTree.root, newTree.subtree(nid))
+        def safePaste(targetTree: SectionTree, parentNid, newTree: SectionTree):
+            for childNew in newTree._childNodes(newTree._rootNode):
+                identicalChildTarget = find(
+                    lambda childTarget: areIdentical(childNew.data, childTarget.data),
+                    targetTree._childNodes(targetTree._rootNode)
+                )
+                if identicalChildTarget is None:
+                    targetTree.paste(parentNid, newTree.subtree(childNew.identifier))
                 else:
-                    newSubTree = mergeR(targetTree.subtree(nid), newTree.subtree(nid))
-                    targetTree.remove_node(nid)
+                    newSubTree = mergeR(targetTree.subtree(identicalChildTarget.identifier), newTree.subtree(childNew.identifier))
+                    targetTree.remove_node(identicalChildTarget.identifier)
                     targetTree.paste(targetTree.root, newSubTree)
 
         def mergeR(lhs: SectionTree, rhs: SectionTree):

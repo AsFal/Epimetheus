@@ -1,6 +1,8 @@
 from datetime import datetime
 from time import time
 
+from random import random
+
 class Entry(object):
     @staticmethod
     def fromString(stringEntry):
@@ -14,13 +16,19 @@ class Entry(object):
     def __init__(self, title, content):
         self.title = title
         self.content = content
+        self.id = self._setId()
 
-    @property
-    def id(self):
-        return self.title + self.content
+    def _setId(self):
+        return str(int(random() * 10000000)) # TODO, change this for something more reliable
 
     def toString(self):
         return "%s: %s" % (self.title, self.content)
+
+    def isEquivalent(self, entry):
+        '''
+        Returns true when title and content of both entries are the same.
+        '''
+        return self.title == entry.title and self.content == entry.content
 
 class LogHeader(Entry):
 
