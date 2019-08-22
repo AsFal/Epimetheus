@@ -5,7 +5,9 @@ from functools import reduce
 from util import flatten
 
 class LogList(list):
-    def __init__(self):
+    def __init__(self, logs=[]):
+        for log in logs:
+            self.append(log)
         super.__init__()
 
     def append(self, new):
