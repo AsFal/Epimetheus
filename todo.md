@@ -42,3 +42,7 @@ FEATURES
 -> No log should be added to logs.txt if the log only contains a root
 -> fish out all of the todos from the code
 -> A button to see more suggestions, or a shortcut
+
+TODOS
+Add more tests for the data structures
+Draw out the relationships and think about refactors
