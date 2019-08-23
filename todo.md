@@ -26,3 +26,12 @@ Make Design extensible to accomodate editing other data structures
 e.g. the a report edit that also adds to the log
 -> Editing always accessses the log of the day, for now only support append to the category
 -> Becomes somewhat easy to add that after the fact
+
+
+August 20th, TODO list for future
+-> Modify SectionTree to accomodate get all titles/conten by section
+-> Use that modification to create the TreeLogSection data structure
+-> Implement the subSection method in the LogSection data structure
+-> Propogate the modifications to the cli
+-> Add a report option for the cli
+-> Publish v0 once everything seems tested, plan for next step

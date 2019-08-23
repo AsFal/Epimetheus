@@ -1,24 +1,17 @@
 from .Log import Log
 from treelib import Node, Tree
 from .SectionTree import SectionTree
+from .TreeLogSection import TreeLogSection
 
 from functools import reduce
 
 # This class should only return Entry objects or strings, NEVER a node
 # External classes should never have to interact with the internal behavior of this class
 
-class TreeLog(Log):
-
-    @staticmethod
-    def getReport(self, logs, category): # -> all logs must be TreeLog
-        categoryTrees = [log._getAllCategoryTrees() for log in logs]
-        categoryTreesF = [categoryTree for categoryTree in categoryTrees if categoryTree._rootNode.data.id == category.id]
-        reportTree = reduce(lambda merged, categoryTree: merged.merge(categoryTree), categoryTreesF)
-        return reportTree.toString()
-
+class TreeLog(Log, TreeLogSection):
     def __init__(self):
-        super().__init__()
-        self._log = SectionTree()
+        Log.__init__(self)
+        TreeLogSection.__init__(self, SectionTree())
         self._log.addEntry(self.header)
         self._iteratorParent = self.header
         self._lastEntry = None
@@ -51,7 +44,7 @@ class TreeLog(Log):
         return [subTree.toString() for subTree in self._getAllCategoryTrees()]
 
     def _getAllCategoryTrees(self, condition=None):
-        return self._log.getAllChildSectionTrees()
+        return self._log.getAllChildSectionTrees(self._log.root)
 
     def getAllCategories(self):
         return self._log.getAllChildrenTitles(self._log._rootNode)
@@ -61,3 +54,9 @@ class TreeLog(Log):
 
     def editEntryTitles(self, old, new):
         self._log.editEntryTitles(old, new)
+
+    def currentSubsection(self):
+        '''
+        Returns a TreeLogSection with the _parentIterator as the root
+        '''
+        return TreeLogSection(self._log.subtree(self._iteratorParent.id))
