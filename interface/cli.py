@@ -35,16 +35,7 @@ def suggestiveInput(availableWords, endCharacter):
     # Before : suggest different different categories
     word = ""
     while True:
-        c = getch()
-        if ord(c) == ord(endCharacter):
-            sys.stdout.write(word + endCharacter)
-            sys.stdout.flush()
-            break
-        elif ord(c) == BACKSPACE_ORDER:
-            word = word[0:-1]
-        else:
-            word += c
-
+        # print suggestions
         saveCursor()
         sys.stdout.write("%s%s\n" % (word, CLEAR_REST)) # write word inline and clear rest of line
         options = suggestions(word)
@@ -54,6 +45,17 @@ def suggestiveInput(availableWords, endCharacter):
             else:
                 print(CLEAR_REST)
         returntoSave()
+
+        # get next character
+        c = getch()
+        if ord(c) == ord(endCharacter):
+            sys.stdout.write(word + endCharacter)
+            sys.stdout.flush()
+            break
+        elif ord(c) == BACKSPACE_ORDER:
+            word = word[0:-1]
+        else:
+            word += c
 
     return word
 
