@@ -39,13 +39,13 @@ class LogList(collections.MutableSequence):
         # I.e. I should be able to TextLog.merge(TreeLog) or vice versa -> this will require some thinking
         # That would require a review of the Merge function
         # For now this will do
-        categoryTrees = [log._getAllCategoryTrees() for log in self.list]
+        categoryTrees = flatten([log._getAllCategoryTrees() for log in self.list])
         categoryTreesF = [categoryTree for categoryTree in categoryTrees if categoryTree._rootNode.data.isEquivalent(category)]
         reportTree = reduce(lambda merged, categoryTree: merged.merge(categoryTree), categoryTreesF)
         return reportTree.toString()
 
     def getAllCategories(self):
-        return flatten([log.getAllCategories() for log in self.list])
+        return list(set(flatten([log.getAllCategories() for log in self.list])))
 
     def getAllCategoryNames(self):
-        return flatten([log.getAllcategoryNames() for log in self.list])
+        return list(set(flatten([log.getAllCategoryNames() for log in self.list])))

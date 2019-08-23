@@ -47,10 +47,10 @@ class TreeLog(Log, TreeLogSection):
         return self._log.getAllChildSectionTrees(self._log.root)
 
     def getAllCategories(self):
-        return self._log.getAllChildrenTitles(self._log._rootNode)
+        return self._log.getAllChildrenTitles(self._log.root)
 
     def getAllCategoryNames(self):
-        return self._log.getAllChildrenContent(self._log._rootNode)
+        return self._log.getAllChildrenContent(self._log.root)
 
     def editEntryTitles(self, old, new):
         self._log.editEntryTitles(old, new)
