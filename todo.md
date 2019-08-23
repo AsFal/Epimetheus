@@ -35,3 +35,10 @@ August 20th, TODO list for future
 -> Propogate the modifications to the cli
 -> Add a report option for the cli
 -> Publish v0 once everything seems tested, plan for next step
+
+
+FEATURES
+-> The interface should have a tab complete feature
+-> No log should be added to logs.txt if the log only contains a root
+-> fish out all of the todos from the code
+-> A button to see more suggestions, or a shortcut
