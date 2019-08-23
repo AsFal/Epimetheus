@@ -2,7 +2,7 @@ from enum import Enum, auto
 
 from PyInquirer import style_from_dict, Token, prompt
 
-from logs import Log, TextLog, appendToLogs, LogList
+from logs import Log, TextLog, appendToLogs, LogList, TreeLog, Entry
 
 from util import flatten
 from getch import getch
@@ -61,7 +61,7 @@ def suggestiveEntry(previousTitles, previousValues):
     title = suggestiveInput(previousTitles, ":")
     sys.stdout.write(" ")
     value = suggestiveInput(previousValues, "\n")
-    return (title.strip(), value.strip())
+    return Entry(title.strip(), value.strip())
 
 def cli(previousLogs: LogList):
 
@@ -79,6 +79,7 @@ def cli(previousLogs: LogList):
         INPUT = auto()
         SHOW = auto()
         PREVIOUS_CATEGORIES = auto()
+        REPORT = auto()
 
     def displayOptions():
         CHOICE = "choice"
@@ -117,6 +118,11 @@ def cli(previousLogs: LogList):
                         "key": "p",
                         "name": "Previous chosen categories",
                         "value": options.PREVIOUS_CATEGORIES
+                    },
+                    {
+                        "key": "r",
+                        "name": "See a category report",
+                        "value": options.REPORT
                     }
                 ]
             }
@@ -125,15 +131,8 @@ def cli(previousLogs: LogList):
         return answers[CHOICE]
 
     def newEntry():
-        # The behavior is safly only implemented by behavior
-        # Desired behavior:
-        # - Prints all category titles for current level
-        # - Prints all category sections for current level
-        # for that it would be very helful to keep track of some kind of partial log structure
-
-        entry = input()
-        entryParts = [part.strip() for part in entry.split(":")]
-        log.addEntry(entryParts[0], entryParts[1])
+        entry = suggestiveEntry(previousLogs.getAllCategories(), previousLogs.getAllCategoryNames())
+        log.addEntry(entry)
 
     def appendLogToFile(log: Log):
         appendToLogs(log.getLogString())
@@ -141,7 +140,11 @@ def cli(previousLogs: LogList):
     def showPreviousCategories():
         pprint(previousLogs.getAllCategories())
 
-    log = TextLog()
+    def showReport():
+        entry = suggestiveEntry(previousLogs.getAllCategories(), previousLogs.getAllCategoryNames())
+        print(previousLogs.getReport(entry))
+
+    log = TreeLog()
 
     while True:
         choice = displayOptions()
@@ -152,9 +155,13 @@ def cli(previousLogs: LogList):
         actions = {
             options.DOWN: lambda: log.levelDown(),
             options.UP: lambda: log.levelUp(),
-            options.INPUT: newEntry,
+            options.INPUT: lambda: newEntry(),
+            # TODO
+            # Feature imporvement, newEntry takes an array of SectionLogs that share a path from root to it
+            # with it, so that the suggestions can be more accurate
             options.SHOW: lambda: print(log.getLogString()),
-            options.PREVIOUS_CATEGORIES: showPreviousCategories
+            options.PREVIOUS_CATEGORIES: showPreviousCategories,
+            options.REPORT: lambda: showReport()
         }
         actions[choice]()
 
