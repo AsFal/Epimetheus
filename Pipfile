@@ -12,6 +12,8 @@ treelib = "*"
 bs4 = "*"
 matplotlib = "*"
 pytest = "*"
+api = {editable = true,path = "."}
+setuptools = "*"
 
 [requires]
 python_version = "3.6"
