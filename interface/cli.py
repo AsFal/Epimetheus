@@ -24,6 +24,7 @@ def suggestiveInput(availableWords, endCharacter):
 
     CLEAR_REST = "\033[K"
     BACKSPACE_ORDER = 127
+    TAB_ORDER = 9
 
     def saveCursor():
         sys.stdout.write("\033[s") # ANSI escpae sequences
@@ -54,6 +55,8 @@ def suggestiveInput(availableWords, endCharacter):
             break
         elif ord(c) == BACKSPACE_ORDER:
             word = word[0:-1]
+        elif ord(c) == TAB_ORDER:
+            word = options[0]
         else:
             word += c
 
