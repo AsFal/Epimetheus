@@ -1,4 +1,5 @@
 from .TreeLog import TreeLog
+import json
 
 import collections
 from functools import reduce
@@ -27,11 +28,31 @@ class LogList(collections.MutableSequence):
         self.check(v)
         self.list[i] = v
 
+    # Method specific to Pyramid, makes class less portable
+    def __json__(self, request):
+        return [log.getLogString() for log in self.list]
+
+    def toJSON(self):
+        return json.dumps(self.__json__(None))
+
     def insert(self, i, v):
         self.check(v)
         self.list.insert(i, v)
 
     def getReport(self, category):
+        '''
+        Gets A TreeLogSection with a root node specified by the category param.
+        A category report is composed of all of the category's nested entries over time.
+
+        Parameters
+        ---------
+        category: Entry
+
+        Returns
+        -------
+        TreeLogSection
+            Category report
+        '''
         # TODO: getAllCategoryTrees need to be accesssible to this scope
         # Or some general method that returns a common data structure, something like a
         # LogPart (or LogSection)
@@ -49,3 +70,4 @@ class LogList(collections.MutableSequence):
 
     def getAllCategoryNames(self):
         return list(set(flatten([log.getAllCategoryNames() for log in self.list])))
+

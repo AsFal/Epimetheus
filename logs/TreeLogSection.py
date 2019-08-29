@@ -15,8 +15,15 @@ class TreeLogSection(LogSection):
         '''
         self._log = tree
 
+    def __json__(self, _request):
+        return self._log.toString()
+
     def getAllTitles(self):
         self._log.getAllChildrenTitles(self._log.root)
 
     def getAllContents(self, level=1):
         self._log.getAllChildrenContent(self._log.root)
+
+    def toString(self):
+        return self._log.toString()
+
