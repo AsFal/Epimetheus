@@ -31,6 +31,7 @@ logs/
     /analysis
         GET -> Gets all reports
         GET -> Nlp results
+        GET -> Suggestions TODO: Need to implement suggestions to go by path
     /session
         /   GET -> Makes no sense to have this route
         /:user GET -> Makes no sense to have this route
